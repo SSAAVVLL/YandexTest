@@ -1,4 +1,12 @@
 <resources>
-    <string name="app_name">YandexTest</string>
     <string name="api_key">trnsl.1.1.20170316T124603Z.5cf068e0afd10b82.3e916e5d03f030a4bda9d8a4861fa7e015907c39</string>
+    <string name="app_name">YandexTest</string>
+    <string name="example_text">Hello world!!!!</string>
+    <string name="bottom_bar_home">Переводчик</string>
+    <string name="bottom_bar_fav">Избранное</string>
+    <string name="bottom_bar_hist">История</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="settings">Настройки</string>
+    <string name="about">О нас</string>
 </resources>

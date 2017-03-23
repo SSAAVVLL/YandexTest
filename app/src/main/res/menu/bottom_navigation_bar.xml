@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home1"
+        android:icon="@drawable/ic_translate_24px"
+        android:title="@string/bottom_bar_home" />
+    <item
+        android:id="@+id/home2"
+        android:icon="@drawable/ic_favorite_24px"
+        android:title="@string/bottom_bar_fav" />
+    <item
+        android:id="@+id/home3"
+        android:icon="@drawable/ic_history_24px"
+        android:title="@string/bottom_bar_hist" />
+</menu>
