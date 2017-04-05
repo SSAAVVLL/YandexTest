@@ -9,7 +9,8 @@
         android:supportsRtl="true"
         android:theme="@style/YandexTheme">
         <activity android:name=".MainActivity"
-            android:theme="@style/YandexTheme.NoActionBar">
+            android:theme="@style/YandexTheme.NoActionBar"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

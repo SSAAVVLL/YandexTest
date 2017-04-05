@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF5722</color>
     <color name="colorAppBar">#000</color>
     <color name="colorNavBar">#000</color>
+    <color name="colorLang">#fff</color>
+    <color name="mainText">#000</color>
 </resources>

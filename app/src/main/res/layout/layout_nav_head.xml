@@ -19,6 +19,4 @@
         android:textSize="@dimen/textSideNavBottom"
         android:textColor="@color/colorAppBar"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-
 </LinearLayout>
