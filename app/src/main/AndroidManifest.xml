@@ -10,7 +10,8 @@
         android:theme="@style/YandexTheme">
         <activity android:name=".MainActivity"
             android:theme="@style/YandexTheme.NoActionBar"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

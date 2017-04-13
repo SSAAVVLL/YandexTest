@@ -2,6 +2,7 @@ package com.ssaavvll.yandextest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -48,16 +49,24 @@ public class MainActivity extends AppCompatActivity  implements TranslateFragmen
     private String currentFragment = TAG_TRANSLATE;
     private static final String TAG_TRANSLATE = "Translate_fragment";
     private static final String TAG_FAVOURITE = "Favourite_fragment";
-    private static final String TAG_HISTORY= "History_fragment";
+    private static final String TAG_HISTORY = "History_fragment";
+    private static  SQLiteDatabase db;
+
+    public SQLiteDatabase getDb() {
+        return db;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.app_bar_main);
+        /* setting connection to database */
+        HistorySQLiteHelper mDbHelper = new HistorySQLiteHelper(this);
+        db = mDbHelper.getWritableDatabase();
         translateFragment = TranslateFragment.newInstance();
         favouriteFragment = FavouriteFragment.newInstance();
         historyFragment = HistoryFragment.newInstance();
-
-        /*setting actionBar */
+        /* setting actionBar */
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
         setSupportActionBar(mainToolbar);
 
@@ -119,7 +128,6 @@ public class MainActivity extends AppCompatActivity  implements TranslateFragmen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("activity", "destroy");
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener

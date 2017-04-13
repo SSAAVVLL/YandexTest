@@ -11,8 +11,16 @@
     <string name="about">О нас</string>
     <string name="descrip_change_lang">Поменять языки местами</string>
     <string name="descrip_clear_button">Очистить текстовое поле</string>
+    <string name="descrip_speak_button">Прослушать текст</string>
+    <string name="descrip_favorite_button">Добавить в избранное</string>
     <string name="tip_translate">Введите текст для перевода</string>
-
+    <string name="alertResponseSystemLangProblemTitle">Не поддерживаемый язык системы</string>
+    <string name="alertResponseSystemLangProblemMessage">Yandex API не поддерживает язык вашей системы.</string>
+    <string name="alertResponseSystemLangProblemSettings">Настройки</string>
+    <string name="alertResponseLangProblemTitle">Проблема соединения с сервером</string>
+    <string name="alertResponseLangProblemMessage">Не удаётся получить ответ от yandex API.</string>
+    <string name="alertResponseLangProblemRetry">Повторить</string>
+    <string name="langNotSupported">Язык не поддерживается</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

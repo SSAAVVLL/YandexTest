@@ -1,53 +1,77 @@
 package com.ssaavvll.yandextest;
 
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
+import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.Map;
 
 public class TranslateFragment extends Fragment {
     public static final String APP_PREFERENCES = "mysettings";
     public static final String APP_PREFERENCES_LANG_FROM = "langFrom";
     public static final String APP_PREFERENCES_LANG_TO = "langTo";
-    protected SharedPreferences sPref;
-    protected Spinner spinnerFrom;
-    protected Spinner spinnerTo;
-    protected EditText textField;
-    protected ImageButton buttonClear;
-    protected ConstraintLayout constraintLayout;
-    protected HashMap<CharSequence, CharSequence> hmLang;
-    protected ArrayAdapter<CharSequence> adapter;
-    protected Uri.Builder yandexTranslateRequestBuilder;
+    private SharedPreferences sPref;
+    private Spinner spinnerFrom;
+    private Spinner spinnerTo;
+    private EditText textField;
+    private TextView textTranslated;
+    private ImageButton buttonClear;
+    private ImageButton buttonSpeak;
+    private ImageButton buttonSwapLangs;
+    private ImageButton buttonFav;
+    private ConstraintLayout constraintLayout;
+    private CoordinatorLayout rootLayout;
+    private BottomNavigationView bottomNavigation;
+    private HashMap<String, String> hmLang;
+    private HashMap<String, String> hmLangInverse;
+    private ArrayAdapter<CharSequence> adapter;
+    private Uri.Builder yandexTranslateRequestBuilder;
+    private TextToSpeech textToSpeech;
+    private String langTo;
+    private String textFrom;
+
 
     private OnFragmentInteractionListener listener;
 
@@ -58,25 +82,32 @@ public class TranslateFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sPref = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        Log.d("Spref", Integer.toString(sPref.getInt(APP_PREFERENCES_LANG_FROM, 0)));
-        Log.d("spRef", sPref.getAll().toString());
+        /* get shared preferences */
+        Activity activity = getActivity();
+        sPref = activity.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        bottomNavigation = (BottomNavigationView) activity.findViewById(R.id.navigation);
+        textToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
 
-        //MySingleton.getInstance(getActivity()).setSpinnerFrom(10);
-
-
-//        this.setRetainInstance(true);
-//        Log.d("Hello", "I am created");
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
+        /* get views from layout */
         spinnerFrom = (Spinner) view.findViewById(R.id.spinnerFrom);
         spinnerTo = (Spinner) view.findViewById(R.id.spinnerTo);
         buttonClear = (ImageButton) view.findViewById(R.id.clearButton);
+        buttonSpeak = (ImageButton) view.findViewById(R.id.speakButton);
+        buttonSwapLangs = (ImageButton) view.findViewById(R.id.swapLangs);
+        buttonFav = (ImageButton) view.findViewById(R.id.favButton);
         textField = (EditText) view.findViewById(R.id.editTextTrans);
+        textTranslated = (TextView) view.findViewById(R.id.translatedText);
         constraintLayout = (ConstraintLayout) view.findViewById(R.id.translateResult);
+        rootLayout = (CoordinatorLayout) getActivity().findViewById(R.id.rootLayout);
         return view;
     }
 
@@ -84,8 +115,10 @@ public class TranslateFragment extends Fragment {
     public void onActivityCreated (Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         adapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_dropdown_item);
-        hmLang = new HashMap<CharSequence, CharSequence>();
-        /* Build uri for get list of langs from api */
+        hmLang = new HashMap<String, String>();
+        hmLangInverse = new HashMap<String, String>();
+
+        /* Build uri for get list of langs from yandex api */
         final Uri.Builder yandexTranslateBuilder = new Uri.Builder();
         yandexTranslateBuilder.scheme("https")
                 .authority("translate.yandex.net")
@@ -96,76 +129,139 @@ public class TranslateFragment extends Fragment {
                 .appendQueryParameter("key", getString(R.string.api_key))
                 .appendQueryParameter("ui", Locale.getDefault().getLanguage());
         String yandexTranslateURL = yandexTranslateBuilder.build().toString();
-        /*Log.d("Test", yandexTranslateURL);*/
+        Log.d("Test", yandexTranslateURL);
 
         /* get Json from http request, parse them */
-        //RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest jsObjReq = new JsonObjectRequest
                 (Request.Method.GET, yandexTranslateURL, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("response", System.currentTimeMillis() + "");
-                        //Toast.makeText(getApplicationContext(),"Response", Toast.LENGTH_SHORT).show();
-                        /*Log.d("resultJson", response.toString());*/
-                        try {
-                            JSONObject resp = response.getJSONObject("langs");
-                            JSONArray respNames = resp.names();
-                            for (int i = 0; i < respNames.length(); i++) {
-                                Object lang = respNames.get(i);
-                                String langStr = lang.toString();
-                                String langName = resp.get(langStr).toString();
-                                adapter.add(langName);
-                                hmLang.put(langName, langStr);
-                                /*Log.d("shortLang", hmLang.get(langName).toString());*/
-                                /*Log.d("lang", resp.get(langStr).toString());*/
+                        Gson gson = new Gson();
+                        GsonTemplates.ResponseLangs responseLangs = gson.fromJson(response.toString(), GsonTemplates.ResponseLangs.class);
+                        if (responseLangs.langs != null) {
+                            /* filling adapter and hash map*/
+                            HashMap<String, String> langs = responseLangs.langs;
+                            List<String> keys = new ArrayList<String>(langs.values());
+                            Collections.sort(keys);
+
+                            for (Map.Entry<String, String> entry : langs.entrySet()) {
+                                hmLang.put(entry.getValue(), entry.getKey());
+                                hmLangInverse.put(entry.getKey(), entry.getValue());
+                            }
+                            for (int i = 0; i < keys.size(); i++) {
+                                adapter.add(keys.get(i));
                             }
                             spinnerFrom.setSelection(sPref.getInt(APP_PREFERENCES_LANG_FROM, 0));
                             spinnerTo.setSelection(sPref.getInt(APP_PREFERENCES_LANG_TO, 0));
-                            /*Log.d("names", respNames.toString());
-                            Log.d("resp", resp.get("ru").toString());
-                            Log.d("respAll", resp.toString());
-                            Log.d("length", Integer.toString(resp.length()));*/
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        }
+                        else {
+                            /* show alertDialog for not supported languages */
+                            new AlertDialog.Builder(getContext())
+                                    .setTitle(R.string.alertResponseSystemLangProblemTitle)
+                                    .setMessage(R.string.alertResponseSystemLangProblemMessage)
+                                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    })
+                                    .setPositiveButton(R.string.alertResponseSystemLangProblemSettings, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            startActivityForResult(new Intent(Settings.ACTION_LOCALE_SETTINGS), 0);
+                                            getActivity().finish();
+                                        }
+                                    })
+                                    .show();
                         }
                     }
                 }, new Response.ErrorListener() {
+                    /* show alert dialog if can't get response from yandex api*/
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("resultJson", "error");
+                        new AlertDialog.Builder(getContext())
+                                .setTitle(R.string.alertResponseLangProblemTitle)
+                                .setMessage(R.string.alertResponseLangProblemMessage)
+                                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        getActivity().finish();
+                                    }
+                                })
+                                .setPositiveButton(R.string.alertResponseLangProblemRetry, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = getActivity().getIntent();
+                                        getActivity().finish();
+                                        startActivity(intent);
+                                    }
+                                })
+                                .show();
                     }
                 });
         MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjReq);
-        textField.setOnKeyListener(new View.OnKeyListener() {
+        constraintLayout.setAlpha(0);
+        //constraintLayout.setVisibility(View.INVISIBLE);
+        /* listener for clear button*/
+        buttonClear.setOnClickListener(new View.OnClickListener(){
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.d("editText", "pressed");
-                yandexTranslateRequestBuilder.clearQuery();
-                yandexTranslateRequestBuilder.appendQueryParameter("key", getString(R.string.api_key))
-                        .appendQueryParameter("text", "hello")
-                        .appendQueryParameter("lang", "en-ru");
-                String yandexTranslateRequestURL = yandexTranslateRequestBuilder.build().toString();
-                JsonObjectRequest jsObjReq = new JsonObjectRequest
-                        (Request.Method.GET, yandexTranslateRequestURL, null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                Log.d("resultJson", response.toString());
-
-
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d("resultJson", "error");
-                            }
-                        });
-                MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjReq);
-                return false;
+            public void onClick(View v) {
+                textField.getText().clear();
             }
         });
-        constraintLayout.setVisibility(View.INVISIBLE);
+        /* listener for swap languages button */
+        buttonSwapLangs.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                int spinnerFromPosition = spinnerFrom.getSelectedItemPosition();
+                spinnerFrom.setSelection(spinnerTo.getSelectedItemPosition());
+                spinnerTo.setSelection(spinnerFromPosition);
+            }
+        });
+        /* listener for speak button*/
+        buttonSpeak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("speak", langTo);
+                int result = textToSpeech.setLanguage(new Locale(langTo));
+                if (result == TextToSpeech.LANG_MISSING_DATA
+                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(getActivity(), R.string.langNotSupported, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), hmLangInverse.get(langTo), Toast.LENGTH_SHORT).show();
+                    textToSpeech.speak(textTranslated.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+
+                }
+            }
+        });
+        /* listener for favourite button */
+        buttonFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentValues values = new ContentValues();
+                values.put(TranslateContract.History.COLUMN_NAME_LANG_FROM, "ru");
+                values.put(TranslateContract.History.COLUMN_NAME_LANG_TO, "en");
+                values.put(TranslateContract.History.COLUMN_NAME_TEXT_FROM, "olol");
+                values.put(TranslateContract.History.COLUMN_NAME_TEXT_TO, "help");
+                values.put(TranslateContract.History.COLUMN_NAME_FAVOURITE, 0);
+                MainActivity act = (MainActivity)getActivity();
+                long newRowId = act.getDb().insert(TranslateContract.History.TABLE_NAME, null, values);
+            }
+        });
+        /* listener of keyboard opens */
+        KeyboardVisibilityEvent.setEventListener(getActivity(),
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        if (isOpen)
+                            bottomNavigation.setVisibility(View.GONE);
+                        else
+                            bottomNavigation.setVisibility(View.VISIBLE);
+                    }
+                }
+        );
+        /* settings adapter on spinners*/
         spinnerFrom.setAdapter(adapter);
         spinnerTo.setAdapter(adapter);
+        /* build uri for translate request */
         yandexTranslateRequestBuilder = new Uri.Builder();
         yandexTranslateRequestBuilder.scheme("https")
                 .authority("translate.yandex.net")
@@ -173,13 +269,52 @@ public class TranslateFragment extends Fragment {
                 .appendPath("v1.5")
                 .appendPath("tr.json")
                 .appendPath("translate");
-        buttonClear.setOnClickListener(new View.OnClickListener(){
+        /* Text changed listener for main textField */
+        textField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                Log.d("buttonClear","click");
-                textField.getText().clear();
-                constraintLayout.setVisibility(View.VISIBLE);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().equals("")) {
+                    /* make translate request to yandex API */
+                    String from = hmLang.get(spinnerFrom.getItemAtPosition(spinnerFrom.getSelectedItemPosition()));
+                    String to = hmLang.get(spinnerTo.getItemAtPosition(spinnerTo.getSelectedItemPosition()));
+                    yandexTranslateRequestBuilder.clearQuery();
+                    textFrom = s.toString();
+                    yandexTranslateRequestBuilder.appendQueryParameter("key", getString(R.string.api_key))
+                            .appendQueryParameter("text", s.toString())
+                            .appendQueryParameter("lang", from + '-' + to);
+
+                    String yandexTranslateRequestURL = yandexTranslateRequestBuilder.build().toString();
+                    JsonObjectRequest jsObjReq = new JsonObjectRequest
+                            (Request.Method.GET, yandexTranslateRequestURL, null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    Log.d("textFrom", textFrom);
+                                    Log.d("resultJson", response.toString());
+                                    constraintLayout.animate().alpha(1);
+                                    //constraintLayout.setVisibility(View.VISIBLE);
+                                    Gson gson = new Gson();
+                                    GsonTemplates.ResponseTranslate responseTranslate = gson.fromJson(response.toString(), GsonTemplates.ResponseTranslate.class);
+                                    textTranslated.setText(responseTranslate.text.get(0));
+                                    langTo = responseTranslate.lang.substring(responseTranslate.lang.indexOf('-') + 1);
+                                    //Log.d("translate", responseTranslate.text.toString());
+
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Toast.makeText(getActivity(), "Error on translate",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjReq);
+                }
             }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -196,21 +331,17 @@ public class TranslateFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("resume", "translateFragment");
-        Log.d("resume", System.currentTimeMillis() + "");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("pause", "translateFragment");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         listener = null;
-        Log.d("detach", "translateFragment");
     }
 
     @Override
@@ -225,10 +356,6 @@ public class TranslateFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("spin", 1);
-        //SharedPreferences mPrefs = getSharedPreferences("label",0);
-        Log.d("spinnerFrom", Integer.toString(spinnerFrom.getSelectedItemPosition()));
-        Log.d("spinnerFrom", "help me");
     }
 
     public interface OnFragmentInteractionListener {
