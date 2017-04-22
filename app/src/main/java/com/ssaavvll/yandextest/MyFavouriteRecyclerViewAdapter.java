@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,19 +16,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ssaavvll.yandextest.HistoryFragment.OnListFragmentInteractionListener;
+import com.ssaavvll.yandextest.FavouriteFragment.OnListFragmentInteractionListener;
 
 import java.util.List;
 
-import static java.security.AccessController.getContext;
+public class MyFavouriteRecyclerViewAdapter extends RecyclerView.Adapter<MyFavouriteRecyclerViewAdapter.ViewHolder> {
 
-public class MyHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyHistoryRecyclerViewAdapter.ViewHolder> {
-
-    public final List<TranslateItem> mValues;
-    public final OnListFragmentInteractionListener mListener;
+    private final List<TranslateItem> mValues;
+    private final OnListFragmentInteractionListener mListener;
     private final Activity mActivity;
 
-    public MyHistoryRecyclerViewAdapter(List<TranslateItem> items, OnListFragmentInteractionListener listener, Activity activity) {
+    public MyFavouriteRecyclerViewAdapter(List<TranslateItem> items, OnListFragmentInteractionListener listener, Activity activity) {
         mValues = items;
         mListener = listener;
         mActivity = activity;
@@ -50,8 +47,9 @@ public class MyHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyHistory
         holder.mTextFrom.setText(mValues.get(position).getTextFrom());
         holder.mTextTo.setText(mValues.get(position).getTextTo());
         holder.mLangs.setText(mValues.get(position).getLangFrom() + "-" + mValues.get(position).getLangTo());
-        if (mValues.get(position).getFav())
+        if (mValues.get(position).getFav()) {
             holder.mFav.setImageResource(R.drawable.ic_favicon_active);
+        }
     }
 
     @Override
@@ -124,7 +122,6 @@ public class MyHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyHistory
                 /* Put new value */
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(TranslateContract.History.COLUMN_NAME_FAVOURITE, fav);
-                /* Refresh value in database */
                 int af = MainActivity.getDb().update(TranslateContract.History.TABLE_NAME,
                         contentValues,
                         selection,

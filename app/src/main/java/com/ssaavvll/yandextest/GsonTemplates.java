@@ -7,6 +7,7 @@ import java.util.List;
  * Created by SSAAV on 08.04.2017.
  */
 
+/* templates for request from yandexTranslate API*/
 public class GsonTemplates {
     public class ResponseLangs {
         String[] dirs;

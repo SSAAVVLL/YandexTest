@@ -13,6 +13,7 @@ import com.android.volley.toolbox.Volley;
  * Created by SSAAV on 16.03.2017.
  */
 
+/* MySingleton class for work with Volley */
 public class MySingleton {
     private static MySingleton mInstance;
     private RequestQueue mRequestQueue;

@@ -7,4 +7,5 @@
     <color name="colorNavBar">#000</color>
     <color name="colorLang">#fff</color>
     <color name="mainText">#000</color>
+    <color name="subColorHistory">#9000</color>
 </resources>

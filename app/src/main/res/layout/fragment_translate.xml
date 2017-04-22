@@ -2,9 +2,10 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:id="@+id/trans">
+    android:id="@+id/scrollTranslateFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,19 +19,21 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:focusableInTouchMode="true"
             android:background="#fff"
             android:elevation="4dp">
             <EditText
                 android:id="@+id/editTextTrans"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:lines="5"
                 android:hint="@string/tip_translate"
-                android:inputType="textMultiLine"
+                android:inputType="text"
+                android:maxLength="10000"
+                android:imeOptions="actionDone"
                 android:background="@android:color/transparent"
                 android:gravity="top"
                 android:textColor="@color/mainText"
-                android:scrollbars="vertical"
                 android:textSize="@dimen/text_size"
                 style="@style/Widget.AppCompat.EditText"
                 android:layout_margin="@dimen/standart_padd"
@@ -47,10 +50,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_clear"
+                android:src="@drawable/ic_clear_black"
                 android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="@string/descrip_clear_button"
-                android:padding="8dp"
+                android:padding="3dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="12dp" />
@@ -60,7 +63,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:elevation="4dp">
 
@@ -77,16 +79,16 @@
                 app:layout_constraintRight_toLeftOf="@+id/buttons"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintBottom_toTopOf="@+id/copyright" />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@id/buttons"
+                android:id="@+id/buttons"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/copyright"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="8dp"
@@ -111,6 +113,18 @@
                     android:padding="8dp"
                     android:src="@drawable/ic_favicon" />
             </LinearLayout>
+            <TextView
+                android:id="@+id/copyright"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/copyright"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>

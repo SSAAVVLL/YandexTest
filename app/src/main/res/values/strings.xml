@@ -1,12 +1,9 @@
 <resources>
-    <string name="api_key">trnsl.1.1.20170316T124603Z.5cf068e0afd10b82.3e916e5d03f030a4bda9d8a4861fa7e015907c39</string>
+    <string name="api_key">trnsl.1.1.20170422T144554Z.390ec712517f6a35.8c99106d4d5a5da207655d96f9dd8688355e3230</string>
     <string name="app_name">YandexTest</string>
-    <string name="example_text">Hello world!!!!</string>
     <string name="bottom_bar_home">Переводчик</string>
     <string name="bottom_bar_fav">Избранное</string>
     <string name="bottom_bar_hist">История</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="settings">Настройки</string>
     <string name="about">О нас</string>
     <string name="descrip_change_lang">Поменять языки местами</string>
@@ -18,9 +15,37 @@
     <string name="alertResponseSystemLangProblemMessage">Yandex API не поддерживает язык вашей системы.</string>
     <string name="alertResponseSystemLangProblemSettings">Настройки</string>
     <string name="alertResponseLangProblemTitle">Проблема соединения с сервером</string>
-    <string name="alertResponseLangProblemMessage">Не удаётся получить ответ от yandex API.</string>
+    <string name="alertResponseLangProblemMessage">Не удаётся соединится с сервером yandex API. Проверьте ваше подключение к интернету.</string>
     <string name="alertResponseLangProblemRetry">Повторить</string>
+    <string name="alertClearHistoryTitle">Очистка истории</string>
+    <string name="alertClearHistoryMessage">Вы действительно хотите очистить историю?</string>
+    <string name="alertClearFavouriteTitle">Очистка избранного</string>
+    <string name="alertClearFavouriteMessage">Вы действительно хотите очистить избранное?</string>
     <string name="langNotSupported">Язык не поддерживается</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="addToFav">Добавлено в избранное</string>
+    <string name="delFromFav">Удалено из избранного</string>
+    <string name="error">Произошла ошибка</string>
+    <string name="emptyField">Пустое текстовое поле</string>
+    <string name="errorTranslate">Не удалось перевести текст</string>
+    <string name="errorTranslateLength">Слишком длинный текст</string>
+    <string name="errorTranslateCount">Израсходован лимит текстового перевода</string>
+    <string name="errorTranslateCant">Текст не может быть переведён</string>
+    <string name="errorTranslateDirection">Текст не может быть переведён</string>
+    <string name="clearHistory">Очистить историю</string>
+    <string name="clearFavourite">Удалить избранное</string>
+    <string name="clearedHistory">История успешно очищена</string>
+    <string name="clearedFavourite">Избранное успешно очищено</string>
+    <string name="historyEmpty">Нет переводов в истории</string>
+    <string name="favouriteEmpty">Нет переводов в избранном</string>
+    <string name="copyText">Текст скопирован в буффер обмена</string>
+    <string name="text_about_app">Приложение было разработано специально для участия в проекте Яндекса "Мобилизация" </string>
+    <string name="header_about_app">О приложении</string>
+    <string name="text_about_author">Старателев Владислав</string>
+    <string name="header_about_author">Разработчик приложения</string>
+    <string name="header_contacts">Контакты</string>
+    <string name="header_copyrights">Машинный перевод</string>
+    <string name="text_contacts_vk">VK: https://vk.com/savl72rus</string>
+    <string name="text_contacts_mail">Mail: ssaavvll.utmn@gmail.com</string>
+    <string name="translateProgress">Процесс перевода</string>
+    <string name="copyright">Переведено сервисом <a href="http://translate.yandex.ru/">«Яндекс.Переводчик»</a></string>
 </resources>

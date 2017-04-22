@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class HistorySQLiteHelper extends SQLiteOpenHelper {
+    /* Helper for work with database */
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "HistoryTranslate.db";
 

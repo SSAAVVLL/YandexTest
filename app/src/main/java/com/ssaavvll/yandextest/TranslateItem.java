@@ -3,9 +3,7 @@ package com.ssaavvll.yandextest;
 /**
  * Created by SSAAV on 12.04.2017.
  */
-
-
-
+/* class for hold history item */
     public class TranslateItem {
         private long id;
         private String textFrom;
@@ -14,13 +12,15 @@ package com.ssaavvll.yandextest;
         private String langTo;
         private int fav;
 
-        /*TranslateItem(String textFrom, String textTo, String langFrom, String langTo) {
+        TranslateItem(){}
+        TranslateItem(long id, String textFrom, String textTo, String langFrom, String langTo, int fav) {
+            this.id = id;
             this.textFrom = textFrom;
             this.textTo = textTo;
             this.langFrom = langFrom;
             this.langTo = langTo;
-            fav = 0;
-        }*/
+            this.fav = fav;
+        }
 
         public void setId(long id) {
             this.id = id;

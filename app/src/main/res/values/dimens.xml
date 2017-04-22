@@ -6,8 +6,11 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">56dp</dimen>
     <dimen name="standart_padd">16dp</dimen>
+    <dimen name="half_padd">8dp</dimen>
     <dimen name="font_size">24sp</dimen>
     <dimen name="textSideNavBottom">18dp</dimen>
     <dimen name="text_size">16sp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="head_about">20sp</dimen>
+    <dimen name="height_of_langBar">48dp</dimen>
 </resources>

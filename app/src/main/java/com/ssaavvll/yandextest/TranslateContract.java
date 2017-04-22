@@ -6,6 +6,7 @@ import android.provider.BaseColumns;
  * Created by SSAAV on 10.04.2017.
  */
 
+/* defining struct of table */
 public final class TranslateContract {
     private TranslateContract(){};
 
@@ -16,11 +17,11 @@ public final class TranslateContract {
         public static final String COLUMN_NAME_LANG_FROM = "lang_from";
         public static final String COLUMN_NAME_LANG_TO = "lang_to";
         public static final String COLUMN_NAME_FAVOURITE = "favourite";
-        public String[] allColumns = {_ID +
-                COLUMN_NAME_TEXT_FROM +
-                COLUMN_NAME_TEXT_TO +
-                COLUMN_NAME_LANG_TO +
-                COLUMN_NAME_LANG_FROM +
+        public static final String[] allColumns = {_ID,
+                COLUMN_NAME_TEXT_FROM,
+                COLUMN_NAME_TEXT_TO,
+                COLUMN_NAME_LANG_TO,
+                COLUMN_NAME_LANG_FROM,
                 COLUMN_NAME_FAVOURITE
         };
     }
