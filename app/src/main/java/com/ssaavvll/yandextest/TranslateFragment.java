@@ -66,9 +66,16 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,6 +129,7 @@ public class TranslateFragment extends Fragment {
         Activity activity = getActivity();
         sPref = activity.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         bottomNavigation = (BottomNavigationView) activity.findViewById(R.id.navigation);
+
         setHasOptionsMenu(true);
     }
 
