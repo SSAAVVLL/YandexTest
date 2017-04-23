@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -87,7 +88,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class TranslateFragment extends Fragment {
-    public static final String APP_PREFERENCES = "mysettings";
     public static final String APP_PREFERENCES_LANG_FROM = "langFrom";
     public static final String APP_PREFERENCES_LANG_TO = "langTo";
     private SharedPreferences sPref;
@@ -127,7 +127,7 @@ public class TranslateFragment extends Fragment {
         /* get shared preferences */
         /* use shared preference for storage custom use of languages from and to */
         Activity activity = getActivity();
-        sPref = activity.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        sPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         bottomNavigation = (BottomNavigationView) activity.findViewById(R.id.navigation);
 
         setHasOptionsMenu(true);
@@ -524,7 +524,7 @@ public class TranslateFragment extends Fragment {
         SharedPreferences.Editor editor = sPref.edit();
         editor.putString(APP_PREFERENCES_LANG_FROM, hmLang.get(spinnerFrom.getSelectedItem()));
         editor.putString(APP_PREFERENCES_LANG_TO, hmLang.get(spinnerTo.getSelectedItem()));
-        editor.commit();
+        editor.apply();
         super.onDestroyView();
     }
 
