@@ -53,6 +53,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -320,6 +321,9 @@ public class TranslateFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 textField.getText().clear();
+                textTranslated.setText("...");
+                buttonSpeak.setEnabled(false);
+                buttonFav.setEnabled(false);
             }
         });
         /* listener for swap languages button */
@@ -543,9 +547,9 @@ public class TranslateFragment extends Fragment {
                 final String from = hmLang.get(spinnerFrom.getSelectedItem());
                 final String to = hmLang.get(spinnerTo.getSelectedItem());
                 yandexTranslateRequestBuilder.clearQuery();
-                
+
                 String yandexTranslateRequestURL = yandexTranslateRequestBuilder.build().toString();
-                StringRequest jsObjReq = new StringRequest
+                StringRequest stringReq = new StringRequest
                         (Request.Method.POST, yandexTranslateRequestURL, new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -565,7 +569,7 @@ public class TranslateFragment extends Fragment {
                                 lastResponse = responseTranslate;
                                 itemProgress.setVisible(false);
                                 /* save values to the database */
-                                if ((!langFrom.equals(hmLang.get(spinnerFrom.getSelectedItem())) || !langTo.equals(hmLang.get(spinnerTo.getSelectedItem()))) && action) {
+                                if ((!textField.getText().toString().equals(textFrom) || !langFrom.equals(hmLang.get(spinnerFrom.getSelectedItem())) || !langTo.equals(hmLang.get(spinnerTo.getSelectedItem()))) && action) {
                                     langFrom = responseTranslate.lang.substring(0, responseTranslate.lang.indexOf('-'));
                                     langTo = responseTranslate.lang.substring(responseTranslate.lang.indexOf('-') + 1);
                                     textFrom = textFr;
@@ -584,10 +588,7 @@ public class TranslateFragment extends Fragment {
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                try {
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                //Log.d("volley", error.getMessage());
                                 itemProgress.setVisible(false);
                                 String message = getString(R.string.errorTranslate);
                                 if (error.networkResponse != null) {
@@ -613,7 +614,8 @@ public class TranslateFragment extends Fragment {
                         return params;
                     }
                 };
-                MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjReq);
+                stringReq.setRetryPolicy(new DefaultRetryPolicy(8000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                MySingleton.getInstance(getActivity()).addToRequestQueue(stringReq);
             } else {}
                 //Toast.makeText(getContext(),R.string.emptyField, Toast.LENGTH_SHORT).show();
         }
@@ -654,6 +656,10 @@ public class TranslateFragment extends Fragment {
         textTranslated.setText(to);
         int prefFrom = keys.indexOf(hmLangInverse.get(langFrom));
         int prefTo = keys.indexOf(hmLangInverse.get(langTo));
+        this.langFrom = langFrom;
+        this.langTo = langTo;
+        buttonSpeak.setEnabled(true);
+        buttonFav.setEnabled(true);
         if (fav)
             buttonFav.setImageResource(R.drawable.ic_favicon_active);
         else
