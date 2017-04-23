@@ -245,16 +245,20 @@ public class TranslateFragment extends Fragment {
                             spinnerFrom.setAdapter(adapter);
                             spinnerTo.setAdapter(adapter);
                             /* set selection on spinners */
-                            int prefFrom = sPref.getInt(APP_PREFERENCES_LANG_FROM, -1);
-                            int prefTo = sPref.getInt(APP_PREFERENCES_LANG_TO, -1);
-                            if (prefFrom == -1 && prefTo == -1) {
-                                prefFrom = keys.indexOf(hmLangInverse.get(Locale.getDefault().getLanguage()));
-                                prefTo = keys.indexOf(hmLangInverse.get("en"));
+                            String prefFrom = sPref.getString(APP_PREFERENCES_LANG_FROM, "");
+                            String prefTo = sPref.getString(APP_PREFERENCES_LANG_TO, "");
+                            if (prefFrom == "" || prefTo == "") {
+                                prefFrom = hmLangInverse.get(Locale.getDefault().getLanguage());
+                                prefTo = hmLangInverse.get("en");
                                 if (prefFrom == prefTo)
-                                    prefTo = keys.indexOf(hmLangInverse.get("de"));
+                                    prefTo = hmLangInverse.get("de");
+                            } else {
+                                prefFrom = hmLangInverse.get(prefFrom);
+                                prefTo = hmLangInverse.get(prefTo);
                             }
-                            spinnerFrom.setSelection(prefFrom);
-                            spinnerTo.setSelection(prefTo);
+
+                            spinnerFrom.setSelection(keys.indexOf(prefFrom));
+                            spinnerTo.setSelection(keys.indexOf(prefTo));
                             /* hide progress bar */
                             loadingScreen.setVisibility(View.GONE);
                             textField.requestFocus();
@@ -518,8 +522,8 @@ public class TranslateFragment extends Fragment {
     public void onDestroyView() {
         /* Save choosen languages */
         SharedPreferences.Editor editor = sPref.edit();
-        editor.putInt(APP_PREFERENCES_LANG_FROM, spinnerFrom.getSelectedItemPosition());
-        editor.putInt(APP_PREFERENCES_LANG_TO, spinnerTo.getSelectedItemPosition());
+        editor.putString(APP_PREFERENCES_LANG_FROM, hmLang.get(spinnerFrom.getSelectedItem()));
+        editor.putString(APP_PREFERENCES_LANG_TO, hmLang.get(spinnerTo.getSelectedItem()));
         editor.commit();
         super.onDestroyView();
     }
