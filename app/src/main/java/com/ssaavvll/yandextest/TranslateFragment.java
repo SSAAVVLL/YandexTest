@@ -11,17 +11,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -30,25 +25,19 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.view.ActionProvider;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,25 +56,12 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class TranslateFragment extends Fragment {
     public static final String APP_PREFERENCES_LANG_FROM = "langFrom";
@@ -542,8 +518,10 @@ public class TranslateFragment extends Fragment {
         ProgressBar progressBar = new ProgressBar(getContext());
         progressBar.setScaleX((float)0.5);
         progressBar.setScaleY((float)0.5);
-        this.itemProgress.setActionView(progressBar);
-        this.itemProgress.setVisible(false);
+        if (this.itemProgress != null) {
+            this.itemProgress.setActionView(progressBar);
+            this.itemProgress.setVisible(false);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
